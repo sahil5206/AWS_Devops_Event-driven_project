@@ -14,16 +14,23 @@ spec:
     spec:
       containers:
         - name: kafka-producer
-          image: gcr.io/YOUR_PROJECT_ID/kafka-producer:latest
-          imagePullPolicy: Always
-          env:
-            - name: BOOTSTRAP_SERVERS
-              value: "kafka:9092"
+          image: gcr.io/YOUR_PROJECT_ID/kafka:latest
+          command: ["java", "ProducerApp"]
           ports:
             - containerPort: 8080
-
 ---
-
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer-service
+spec:
+  selector:
+    app: kafka-producer
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,8 +47,5 @@ spec:
     spec:
       containers:
         - name: kafka-consumer
-          image: gcr.io/YOUR_PROJECT_ID/kafka-consumer:latest
-          imagePullPolicy: Always
-          env:
-            - name: BOOTSTRAP_SERVERS
-              value: "kafka:9092"
+          image: gcr.io/YOUR_PROJECT_ID/kafka:latest
+          command: ["java", "ConsumerApp"]

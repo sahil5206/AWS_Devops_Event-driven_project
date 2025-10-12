@@ -1,13 +1,33 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Event Driven Website</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <h1>GCP Event Driven Architecture</h1>
-    <p>Click below to send an event to Kafka (via Flask producer).</p>
-    <button id="send">Send Event</button>
-    <script src="app.js"></script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Event Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🌐 Real-Time Event Dashboard</h1>
+  </header>
+
+  <main>
+    <section id="event-form">
+      <h2>Send Event</h2>
+      <input type="text" id="eventName" placeholder="Enter event name (e.g. user_click)">
+      <button id="sendEvent">Send Event</button>
+    </section>
+
+    <section id="event-log">
+      <h2>Recent Events</h2>
+      <ul id="eventList"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Powered by Kafka + GKE + Prometheus + Grafana</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
 </html>

@@ -1,11 +1,6 @@
-FROM eclipse-temurin:17-jdk
-
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-
-COPY pom.xml .
-COPY src ./src
-
-RUN apt-get update && apt-get install -y maven
-RUN mvn package -DskipTests
-
-CMD ["java", "-cp", "target/kafka-microservice-1.0-SNAPSHOT.jar", "ProducerApp"]
+COPY . /app
+RUN mkdir -p /app/libs
+RUN javac ProducerApp.java ConsumerApp.java
+CMD ["java", "ProducerApp"]

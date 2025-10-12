@@ -1,43 +1,54 @@
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import java.util.Properties;
-import java.util.Scanner;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 
 public class ProducerApp {
-    public static void main(String[] args) {
-        String topic = "test-topic";
-        String bootstrapServers = "kafka:9092";  
+    private static final String TOPIC = "events";
+    private static Producer<String, String> producer;
 
+    public static void main(String[] args) throws IOException {
+        // Kafka configuration
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        producer = new KafkaProducer<>(props);
 
-        KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+        // Simple HTTP API for event publishing
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        server.createContext("/send", ProducerApp::handleSendEvent);
+        server.start();
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter messages to send to Kafka (type 'exit' to quit):");
+        System.out.println("🚀 ProducerApp running on port 8080 ...");
+    }
 
-        while (true) {
-            System.out.print("> ");
-            String message = scanner.nextLine();
-            if ("exit".equalsIgnoreCase(message)) break;
-
-            ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
-            producer.send(record, (metadata, exception) -> {
-                if (exception == null) {
-                    System.out.printf("Sent message to %s partition[%d] offset[%d]%n",
-                            metadata.topic(), metadata.partition(), metadata.offset());
-                } else {
-                    exception.printStackTrace();
-                }
-            });
+    private static void handleSendEvent(HttpExchange exchange) throws IOException {
+        if (!"POST".equals(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(405, -1);
+            return;
         }
 
-        producer.close();
-        scanner.close();
+        InputStream is = exchange.getRequestBody();
+        String requestBody = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+
+        // Send message to Kafka
+        producer.send(new ProducerRecord<>(TOPIC, requestBody));
+        System.out.println("📤 Sent to Kafka: " + requestBody);
+
+        String response = "✅ Event published successfully!";
+        exchange.sendResponseHeaders(200, response.length());
+        exchange.getResponseBody().write(response.getBytes());
+        exchange.close();
     }
 }
