@@ -1,33 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Real-Time Event Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>🌐 Real-Time Event Dashboard</h1>
-  </header>
+  <nav>
+    <h1>📊 Real-Time Event Analytics Dashboard</h1>
+  </nav>
 
   <main>
-    <section id="event-form">
-      <h2>Send Event</h2>
-      <input type="text" id="eventName" placeholder="Enter event name (e.g. user_click)">
-      <button id="sendEvent">Send Event</button>
+    <section class="intro">
+      <h2>Track Live Events</h2>
+      <p>
+        This dashboard visualizes real-time user events streamed via Kafka running on GKE.
+        Click buttons below to send different types of events.
+      </p>
     </section>
 
-    <section id="event-log">
-      <h2>Recent Events</h2>
-      <ul id="eventList"></ul>
+    <section class="actions">
+      <button class="event-btn" data-event="page_view">👁️ Page View</button>
+      <button class="event-btn" data-event="purchase">💳 Purchase</button>
+      <button class="event-btn" data-event="add_to_cart">🛒 Add to Cart</button>
+      <button class="event-btn" data-event="logout">🚪 Logout</button>
+      <button class="event-btn" data-event="feedback">💬 Feedback Submitted</button>
     </section>
-  </main>
 
-  <footer>
-    <p>Powered by Kafka + GKE + Prometheus + Grafana</p>
-  </footer>
+    <section class="metrics">
+      <h3>Metrics Overview</h3>
+      <div class="metrics-grid">
+        <div class="metric">
+          <h4>Total Events</h4>
+          <p id="totalEvents">0</p>
+        </div>
+        <div class="metric">
+          <h4>Unique Event Types</h4>
+          <p id="uniqueEvents">0</p>
+        </div>
+        <div class="metric">
+          <h4>Active Users</h4>
+          <p id="activeUsers">0</p>
+        </div>
+      </div>
+    </section>
 
-  <script src="app.js"></script>
-</body>
-</html>
+    <section class="chart-section">
+      <h3>📈 Event Frequency</h3>
+      <canvas id="eventChart"></canvas>
+    </section>
+
+    <section class="events-log">
+      <h3>📡 Live Event Fe

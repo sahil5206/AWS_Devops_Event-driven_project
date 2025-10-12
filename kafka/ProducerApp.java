@@ -25,7 +25,7 @@ public class ProducerApp {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         producer = new KafkaProducer<>(props);
 
-        // Simple HTTP API for event publishing
+        // HTTP API for sending events
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
         server.createContext("/send", ProducerApp::handleSendEvent);
         server.start();
@@ -42,9 +42,18 @@ public class ProducerApp {
         InputStream is = exchange.getRequestBody();
         String requestBody = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 
-        // Send message to Kafka
+        // Basic JSON validation: must contain "eventType"
+        if (!requestBody.contains("eventType")) {
+            String resp = "❌ Missing eventType in JSON!";
+            exchange.sendResponseHeaders(400, resp.length());
+            exchange.getResponseBody().write(resp.getBytes());
+            exchange.close();
+            return;
+        }
+
+        // Send event to Kafka
         producer.send(new ProducerRecord<>(TOPIC, requestBody));
-        System.out.println("📤 Sent to Kafka: " + requestBody);
+        System.out.println("📤 Event sent: " + requestBody);
 
         String response = "✅ Event published successfully!";
         exchange.sendResponseHeaders(200, response.length());

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: website
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: website
@@ -17,15 +17,16 @@ spec:
           image: gcr.io/YOUR_PROJECT_ID/website:latest
           ports:
             - containerPort: 80
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: website-service
 spec:
-  type: LoadBalancer
   selector:
     app: website
   ports:
     - port: 80
       targetPort: 80
+  type: LoadBalancer
