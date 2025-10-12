@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-producer
+  template:
+    metadata:
+      labels:
+        app: kafka-producer
+    spec:
+      containers:
+        - name: kafka-producer
+          image: gcr.io/YOUR_PROJECT_ID/kafka-producer:latest
+          imagePullPolicy: Always
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-consumer
+    spec:
+      containers:
+        - name: kafka-consumer
+          image: gcr.io/YOUR_PROJECT_ID/kafka-consumer:latest
+          imagePullPolicy: Always
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: "kafka:9092"
