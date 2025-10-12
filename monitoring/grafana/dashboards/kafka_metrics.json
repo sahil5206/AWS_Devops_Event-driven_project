@@ -1,0 +1,12 @@
+{
+  "title": "Kafka Metrics",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Kafka Messages Rate",
+      "targets": [
+        { "expr": "kafka_server_brokertopicmetrics_messagesin_total" }
+      ]
+    }
+  ]
+}
