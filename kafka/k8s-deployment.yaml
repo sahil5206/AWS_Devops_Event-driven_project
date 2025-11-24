@@ -14,8 +14,11 @@ spec:
     spec:
       containers:
         - name: kafka-producer
-          image: gcr.io/YOUR_PROJECT_ID/kafka:latest
-          command: ["java", "ProducerApp"]
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/kafka:latest
+          imagePullPolicy: Always
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: kafka-broker.default.svc.cluster.local:9092
           ports:
             - containerPort: 8080
 ---
@@ -47,5 +50,10 @@ spec:
     spec:
       containers:
         - name: kafka-consumer
-          image: gcr.io/YOUR_PROJECT_ID/kafka:latest
-          command: ["java", "ConsumerApp"]
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/kafka:latest
+          imagePullPolicy: Always
+          command: ["java"]
+          args: ["-cp", "/app/app.jar:/app/dependency/*", "ConsumerApp"]
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: kafka-broker.default.svc.cluster.local:9092

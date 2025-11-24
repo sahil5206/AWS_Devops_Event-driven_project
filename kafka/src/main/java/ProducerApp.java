@@ -15,15 +15,23 @@ import com.sun.net.httpserver.HttpServer;
 
 public class ProducerApp {
     private static final String TOPIC = "events";
+    private static final String BOOTSTRAP =
+            System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "kafka-broker.default.svc.cluster.local:9092");
     private static Producer<String, String> producer;
 
     public static void main(String[] args) throws IOException {
         // Kafka configuration
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        producer = new KafkaProducer<>(props);
+        try {
+            producer = new KafkaProducer<>(props);
+        } catch (Exception e) {
+            System.err.println("Failed to create producer with bootstrap servers: " + BOOTSTRAP);
+            e.printStackTrace();
+            throw e;
+        }
 
         // HTTP API for sending events
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);

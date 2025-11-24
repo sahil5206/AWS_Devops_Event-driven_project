@@ -1,4 +1,4 @@
-// Kafka Producer API endpoint in GKE
+// Kafka Producer API endpoint when running inside EKS (update as needed)
 const PRODUCER_API = "http://producer-service:8080/send";
 
 let totalEvents = 0;

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: gcr.io/<PROJECT_ID>/jenkins:latest
+        image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/jenkins:latest
         ports:
         - containerPort: 8080
 ---

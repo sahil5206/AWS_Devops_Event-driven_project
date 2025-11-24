@@ -18,17 +18,26 @@ import com.sun.net.httpserver.HttpServer;
 public class ConsumerApp {
     private static final LinkedList<String> lastEvents = new LinkedList<>();
     private static final int MAX_EVENTS = 50;
+    private static final String BOOTSTRAP =
+            System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "kafka-broker.default.svc.cluster.local:9092");
 
     public static void main(String[] args) throws IOException {
         // Kafka consumer setup
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "event-consumer-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        KafkaConsumer<String, String> consumer;
+        try {
+            consumer = new KafkaConsumer<>(props);
+        } catch (Exception e) {
+            System.err.println("Failed to create consumer with bootstrap servers: " + BOOTSTRAP);
+            e.printStackTrace();
+            throw e;
+        }
         consumer.subscribe(Collections.singletonList("events"));
 
         // HTTP server to serve last 50 events

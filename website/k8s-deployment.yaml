@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: website
-          image: gcr.io/YOUR_PROJECT_ID/website:latest
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/website:latest
           ports:
             - containerPort: 80
 
