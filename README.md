@@ -27,7 +27,7 @@ flowchart LR
     P -->|publish| B
     B --> C
     P -->|/metrics| M
-    B -->|JMX Exporter (future)| M
+    B -->|"JMX Exporter (future)"| M
     M --> G
     API --> P
     PROM --> M
