@@ -13,7 +13,7 @@ flowchart LR
     end
 
     subgraph "Amazon EKS Cluster"
-        W[Website Pod<br/>Nginx + Chart.js\nProxy /api/send]
+        W[Website Pod<br/>Nginx + Chart.js<br/>Proxy /api/send]
         P[Kafka Producer<br/>/send & /metrics]
         B[Kafka Broker<br/>Confluent Kafka]
         Z[ZooKeeper]
