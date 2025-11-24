@@ -15,6 +15,7 @@ spec:
       containers:
         - name: website
           image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/website:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
 

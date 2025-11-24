@@ -1,5 +1,6 @@
-// Kafka Producer API endpoint when running inside EKS (update as needed)
-const PRODUCER_API = "http://producer-service:8080/send";
+// Producer endpoint is exposed via the website pod (Nginx proxy to the cluster service)
+const PRODUCER_API =
+  window.PRODUCER_API_ENDPOINT || "/api/send";
 
 let totalEvents = 0;
 let uniqueEvents = new Set();

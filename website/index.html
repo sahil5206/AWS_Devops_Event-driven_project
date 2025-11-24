@@ -1,56 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real-Time Event Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <nav>
-    <h1>📊 Real-Time Event Analytics Dashboard</h1>
-  </nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-Time Event Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <nav>
+      <h1>📊 Real-Time Event Analytics Dashboard</h1>
+    </nav>
 
-  <main>
-    <section class="intro">
-      <h2>Track Live Events</h2>
-      <p>
-        This dashboard visualizes real-time user events streamed via Kafka running on AWS EKS.
-        Click buttons below to send different types of events.
-      </p>
-    </section>
+    <main>
+      <section class="intro">
+        <h2>Track Live Events</h2>
+        <p>
+          This dashboard visualizes user events streaming through Kafka on AWS EKS. Use the buttons below to emit sample
+          events and watch the metrics update instantly.
+        </p>
+      </section>
 
-    <section class="actions">
-      <button class="event-btn" data-event="page_view">👁️ Page View</button>
-      <button class="event-btn" data-event="purchase">💳 Purchase</button>
-      <button class="event-btn" data-event="add_to_cart">🛒 Add to Cart</button>
-      <button class="event-btn" data-event="logout">🚪 Logout</button>
-      <button class="event-btn" data-event="feedback">💬 Feedback Submitted</button>
-    </section>
+      <section class="actions">
+        <button class="event-btn" data-event="page_view">👁️ Page View</button>
+        <button class="event-btn" data-event="purchase">💳 Purchase</button>
+        <button class="event-btn" data-event="add_to_cart">🛒 Add to Cart</button>
+        <button class="event-btn" data-event="logout">🚪 Logout</button>
+        <button class="event-btn" data-event="feedback">💬 Feedback</button>
+      </section>
 
-    <section class="metrics">
-      <h3>Metrics Overview</h3>
-      <div class="metrics-grid">
-        <div class="metric">
-          <h4>Total Events</h4>
-          <p id="totalEvents">0</p>
+      <section class="metrics">
+        <h3>Metrics Overview</h3>
+        <div class="metrics-grid">
+          <div class="metric">
+            <h4>Total Events</h4>
+            <p id="totalEvents">0</p>
+          </div>
+          <div class="metric">
+            <h4>Unique Event Types</h4>
+            <p id="uniqueEvents">0</p>
+          </div>
+          <div class="metric">
+            <h4>Active Users</h4>
+            <p id="activeUsers">0</p>
+          </div>
         </div>
-        <div class="metric">
-          <h4>Unique Event Types</h4>
-          <p id="uniqueEvents">0</p>
-        </div>
-        <div class="metric">
-          <h4>Active Users</h4>
-          <p id="activeUsers">0</p>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="chart-section">
-      <h3>📈 Event Frequency</h3>
-      <canvas id="eventChart"></canvas>
-    </section>
+      <section class="chart-section">
+        <h3>📈 Event Frequency</h3>
+        <canvas id="eventChart"></canvas>
+      </section>
 
-    <section class="events-log">
-      <h3>📡 Live Event Fe
+      <section class="events-log">
+        <h3>📡 Live Event Feed</h3>
+        <div id="log" class="log"></div>
+      </section>
+    </main>
+  </body>
+</html>
+
