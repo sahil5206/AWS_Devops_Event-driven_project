@@ -2,39 +2,47 @@
 
 This project delivers a fully-instrumented Event Driven Architecture on Amazon Web Services. A React-free web UI emits synthetic user events, a Java Kafka producer publishes them to an in-cluster broker, a Kafka consumer exposes history, and Prometheus + Grafana provide real-time observability. Terraform builds the AWS foundation, Jenkins (optional) automates container builds and deployments, and everything ultimately runs in Amazon EKS.
 
+```mermaid
+flowchart LR
+    subgraph Internet
+        U([Users])
+        UI[(ALB - Website)]
+        API[(ALB - Producer API)]
+        PROM[(ALB - Prometheus)]
+        GRAF[(ALB - Grafana)]
+    end
+
+    subgraph "Amazon EKS Cluster"
+        W[Website Pod<br/>Nginx + Chart.js\nProxy /api/send]
+        P[Kafka Producer<br/>/send & /metrics]
+        B[Kafka Broker<br/>Confluent Kafka]
+        Z[ZooKeeper]
+        C[Kafka Consumer<br/>/events]
+        M[Prometheus<br/>Scrape 2s]
+        G[Grafana<br/>Auto dashboard]
+    end
+
+    U --> UI --> W
+    W -->|/api/send| P
+    P -->|publish| B
+    B --> C
+    P -->|/metrics| M
+    B -->|JMX Exporter (future)| M
+    M --> G
+    API --> P
+    PROM --> M
+    GRAF --> G
 ```
-┌────────────┐     ┌────────────────────────┐     ┌────────────────────┐
-│   Users    │ --> │  AWS ALB (Website)     │ --> │  Website Pod       │
-└────────────┘     └────────────────────────┘     │  (Nginx + Chart.js)│
-                                                         │
-                                                         ▼
-                                                ┌──────────────────┐
-                                                │ Kafka Producer   │─┐
-                                                │  /send + /metrics│ │
-                                                └──────────────────┘ │
-                                 ┌────────────── AWS EKS ─────────────┤
-                                                ┌──────────────────┐ │
-                                                │ Kafka Broker     │ │
-                                                │ + Zookeeper      │ │
-                                                └──────────────────┘ │
-                                                ┌──────────────────┐ │
-                                                │ Kafka Consumer   │◄┘
-                                                │  /events         │
-                                                └──────────────────┘
-                                                         │
-                                                         ▼
-                                                ┌──────────────────┐
-                                                │ Prometheus (LB)  │
-                                                │  - Scrapes broker│
-                                                │    & producer    │
-                                                └──────────────────┘
-                                                         │
-                                                         ▼
-                                                ┌──────────────────┐
-                                                │ Grafana (LB)     │
-                                                │ Producer Metrics │
-                                                └──────────────────┘
-```
+
+> *Pro tip:* open this README in GitHub (or any markdown viewer with Mermaid support) and use your browser zoom (Ctrl/Cmd + Scroll) to inspect individual mappings between services.
+
+### Event Flow (Zoomable Narrative)
+1. **User Interaction** – A browser session hits the public website ALB. The static UI (Nginx + Chart.js) renders instantly.
+2. **UI Proxy** – Each button fires `fetch("/api/send")`; Nginx forwards this to the internal producer service within the cluster.
+3. **Producer Service** – Validates payloads, persists to Kafka (`events` topic), and increments the Prometheus counter exposed at `/metrics`.
+4. **Kafka Layer** – Confluent broker + ZooKeeper store the event stream. A consumer pod tails the topic and exposes the last 50 messages on `/events`.
+5. **Observability** – Prometheus scrapes the producer (`producer_events_total`) and broker endpoints every 2 seconds; Grafana refreshes its panels every 5 seconds and is accessible via its own ALB.
+6. **Feedback Loop** – UI counters update immediately (client-side), Prometheus/Grafana reflect the same traffic within seconds, providing real-time visibility.
 
 ### AWS & Tooling
 | Layer | Services / Tools |
