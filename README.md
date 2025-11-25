@@ -13,21 +13,21 @@ flowchart LR
     end
 
     subgraph "Amazon EKS Cluster"
-        W[Website Pod<br/>Nginx + Chart.js<br/>Proxy /api/send]
-        P[Kafka Producer<br/>/send & /metrics]
-        B[Kafka Broker<br/>Confluent Kafka]
-        Z[ZooKeeper]
-        C[Kafka Consumer<br/>/events]
-        M[Prometheus<br/>Scrape 2s]
-        G[Grafana<br/>Auto dashboard]
+        W["Website Pod<br/>Nginx + Chart.js<br/>Proxy /api/send"]
+        P["Kafka Producer<br/>/send & /metrics"]
+        B["Kafka Broker<br/>Confluent Kafka"]
+        Z["ZooKeeper"]
+        C["Kafka Consumer<br/>/events"]
+        M["Prometheus<br/>2s scrape"]
+        G["Grafana<br/>5s refresh"]
     end
 
     U --> UI --> W
     W -->|/api/send| P
     P -->|publish| B
+    B --> Z
     B --> C
     P -->|/metrics| M
-    B -->|"JMX Exporter (future)"| M
     M --> G
     API --> P
     PROM --> M
